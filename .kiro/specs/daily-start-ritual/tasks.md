@@ -49,7 +49,8 @@
 
 
 
-  - [-] 3.1 Implement decision interface
+  - [x] 3.1 Implement decision interface
+
 
     - Create Do/Delegate/Defer action buttons for each inbox item
     - Add 2-minute timer with visual countdown for quick assessment
@@ -57,7 +58,8 @@
     - Build context preservation system for item details
     - _Requirements: 2.1, 2.2, 2.3_
 
-  - [ ] 3.2 Add delegation and deferral handling
+  - [-] 3.2 Add delegation and deferral handling
+
     - Create assignee selection interface for delegated items
     - Implement due date picker for deferred tasks
     - Add context tagging (@deep/@shallow) during clarification
