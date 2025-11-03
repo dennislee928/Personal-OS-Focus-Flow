@@ -202,7 +202,13 @@ export class VoiceService {
   }
 
   private initializeRecognition(): void {
-    // Check for browser support
+    // Check for browser support (skip in Node.js environment)
+    if (typeof window === 'undefined') {
+      this.isSupported = false;
+      this.setStatus(VoiceStatus.UNSUPPORTED);
+      return;
+    }
+
     const SpeechRecognition = (window as any)?.SpeechRecognition || 
                              (window as any)?.webkitSpeechRecognition;
 

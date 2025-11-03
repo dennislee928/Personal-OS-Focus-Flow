@@ -12,7 +12,9 @@
   - Implement persistence service for ritual data and preferences
   - _Requirements: 6.1, 7.1, 7.5_
 
-- [-] 2. Implement capture interface and engine
+- [x] 2. Implement capture interface and engine
+
+
 
 
 
@@ -43,8 +45,12 @@
     - Create auto-categorization based on content analysis
     - _Requirements: 1.2, 1.5_
 
-- [ ] 3. Build clarify processor with GTD 2-minute rule
-  - [ ] 3.1 Implement decision interface
+- [-] 3. Build clarify processor with GTD 2-minute rule
+
+
+
+  - [-] 3.1 Implement decision interface
+
     - Create Do/Delegate/Defer action buttons for each inbox item
     - Add 2-minute timer with visual countdown for quick assessment
     - Implement batch operations for processing similar items
