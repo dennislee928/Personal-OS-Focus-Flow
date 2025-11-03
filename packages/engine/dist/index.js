@@ -10,6 +10,7 @@ export { RitualStateMachine } from './workflow/state-machine.js';
 export { RitualController } from './controllers/ritual-controller.js';
 export { CaptureController } from './controllers/capture-controller.js';
 export { ClarifyController } from './controllers/clarify-controller.js';
+export { TaskSelectionController } from './controllers/task-selection-controller.js';
 // Services
 export { PersistenceService } from './services/persistence-service.js';
 export { CaptureService } from './services/capture-service.js';
@@ -17,10 +18,13 @@ export { VoiceService, VoiceStatus, VoiceError } from './services/voice-service.
 export { InboxService } from './services/inbox-service.js';
 export { ClarifyService } from './services/clarify-service.js';
 export { DelegationService } from './services/delegation-service.js';
+export { TaskSelectionService } from './services/task-selection-service.js';
 // Components
 export { AssigneeSelector } from './components/assignee-selector.js';
 export { DueDatePicker } from './components/due-date-picker.js';
 export { ContextTagger } from './components/context-tagger.js';
+export { TaskSelectionInterface } from './components/task-selection-interface.js';
+export { DragDropOrdering } from './components/drag-drop-ordering.js';
 // Adapters
 export * from './adapters/index.js';
 // Factory function for easy setup
