@@ -1,0 +1,27 @@
+{
+  "name": "@personal-os/engine",
+  "version": "0.1.0",
+  "description": "Daily Start Ritual workflow engine",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "clean": "rm -rf dist"
+  },
+  "files": [
+    "dist/**/*"
+  ],
+  "keywords": [
+    "productivity",
+    "ritual",
+    "workflow",
+    "gtd",
+    "ivy-lee"
+  ],
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "@types/node": "^20.0.0"
+  }
+}
