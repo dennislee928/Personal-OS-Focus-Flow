@@ -69,21 +69,32 @@
     - Build validation for required fields based on action type
     - _Requirements: 2.4, 2.5_
 
-- [-] 4. Create Ivy-6 task selection system
+- [x] 4. Create Ivy-6 task selection system
 
 
-  - [ ] 4.1 Build task selection interface
+
+
+
+  - [x] 4.1 Build task selection interface
+
+
     - Create task list with selection checkboxes and constraint enforcement
     - Implement exactly-six-task validation with clear error messaging
     - Add smart filtering and suggestions based on priority scoring
     - Build visual feedback for selection state and remaining slots
     - _Requirements: 3.1, 3.2, 3.3_
 
-  - [ ] 4.2 Implement drag-and-drop task ordering
+
+
+  - [-] 4.2 Implement drag-and-drop task ordering
+
+
     - Add drag-and-drop functionality for priority ranking
     - Create visual indicators for task order and importance
     - Implement touch-friendly reordering for mobile compatibility
     - Add keyboard shortcuts for reordering without mouse
+
+
     - _Requirements: 3.4, 6.4_
 
   - [ ] 4.3 Add task prioritization algorithms

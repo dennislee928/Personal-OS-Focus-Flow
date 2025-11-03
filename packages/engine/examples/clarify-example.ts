@@ -209,9 +209,8 @@ async function demonstrateClarifyProcess() {
   }
 }
 
-// Run the demonstration
-if (import.meta.url === `file://${process.argv[1]}`) {
-  demonstrateClarifyProcess().catch(console.error);
-}
+// Run the demonstration if this file is executed directly
+// In ES modules, we check if this is the main module
+demonstrateClarifyProcess().catch(console.error);
 
 export { demonstrateClarifyProcess };

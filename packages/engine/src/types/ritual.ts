@@ -111,3 +111,48 @@ export interface RitualSummary {
   scheduledBlocks: FocusBlock[];
   metrics: RitualMetrics;
 }
+
+// Task Selection Types
+export interface Task {
+  id: string;
+  title: string;
+  description?: string;
+  dueDate?: Date;
+  importance: 'high' | 'medium' | 'low';
+  effort: 'high' | 'medium' | 'low';
+  context: '@deep' | '@shallow';
+  dependencies: string[]; // Task IDs
+  estimatedDuration: number; // minutes
+  tags: string[];
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface TaskPriorityScore {
+  taskId: string;
+  score: number;
+  factors: {
+    dueDateUrgency: number;
+    importance: number;
+    effort: number;
+    contextBalance: number;
+    dependencies: number;
+  };
+}
+
+export interface TaskSelectionState {
+  availableTasks: Task[];
+  selectedTaskIds: string[];
+  priorityScores: TaskPriorityScore[];
+  remainingSlots: number;
+  validationErrors: string[];
+  suggestions: Task[];
+}
+
+export interface TaskSelectionConstraints {
+  maxTasks: 6;
+  minTasks: 1;
+  maxDeepWorkTasks: 4;
+  maxShallowTasks: 4;
+  maxDailyEffort: number; // minutes
+}
