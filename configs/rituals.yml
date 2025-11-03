@@ -1,0 +1,105 @@
+# Personal OS — Ritual Definitions
+
+version: 1
+
+rituals:
+  daily_start:
+    name: "Daily Start"
+    duration_minutes: 10
+    steps:
+      - id: capture
+        label: "Capture (GTD)"
+        prompt: "Dump all open loops to Inbox."
+        action: "collect"
+      - id: clarify
+        label: "Clarify (GTD)"
+        prompt: "For each inbox item: actionable? ≤2 min → do now; else Do/Delegate/Defer."
+        action: "clarify"
+      - id: ivy6
+        label: "Prioritize (Ivy-6)"
+        prompt: "Choose exactly six tasks; order them; unfinished rolls to tomorrow."
+        action: "rank"
+        constraints:
+          max_items: 6
+      - id: plan_blocks
+        label: "Time-plan blocks"
+        prompt: "Place 2–3 focus blocks; default Pomodoro 25/5."
+        action: "schedule"
+        defaults:
+          mode: "pomodoro"
+          pomodoro_minutes: 25
+          short_break_minutes: 5
+      - id: frog
+        label: "Start with the Frog"
+        prompt: "Begin #1 during 09:00–10:30 high-focus window."
+        action: "start"
+        constraints:
+          window_start: "09:00"
+          window_end: "12:00"
+
+  weekly_review:
+    name: "Weekly Review"
+    cadence: "weekly"
+    duration_minutes: 40
+    steps:
+      - id: empty_inboxes
+        label: "Empty inboxes"
+        prompt: "Capture → Clarify → Organize all inputs."
+      - id: eisenhower_pass
+        label: "Eisenhower re-score"
+        prompt: "Tag tasks: Do Now / Schedule / Delegate / Delete."
+      - id: schedule_deep
+        label: "Reserve deep-work blocks"
+        prompt: "Book next week’s deep blocks first; morning bias."
+      - id: pareto
+        label: "Pareto check"
+        prompt: "Are top scheduled tasks in the vital 20%?"
+
+presets:
+  board:
+    columns:
+      - { id: backlog, name: "Backlog", wip_limit: null }
+      - { id: ready, name: "Ready", wip_limit: 5 }
+      - { id: doing, name: "Doing", wip_limit: 2 }
+      - { id: review, name: "Review/Blocked", wip_limit: 3 }
+      - { id: done, name: "Done", wip_limit: null }
+
+goals:
+  ielts_writing:
+    exam_date: "2025-11-25"
+    daily_block:
+      window: "09:00-10:30"
+      mode: "pomodoro"
+      cycles: 3
+    session_template:
+      - "Prompt"
+      - "Outline (5’)"
+      - "Draft (25’)"
+      - "Rubric self-check (10’)"
+      - "Error log"
+      - "Next fix"
+    weekly:
+      - "Full mock (Task1 + Task2)"
+      - "Review + error trend"
+
+  applications:
+    program_card_fields:
+      - "Deadlines"
+      - "SOP"
+      - "CV"
+      - "References"
+      - "Transcripts"
+    queues:
+      deep:
+        - "SOP drafting"
+        - "Research synthesis page"
+      shallow:
+        - "Emails"
+        - "Uploads"
+        - "Scheduling"
+
+  fitness:
+    schedule:
+      strength_days: ["Mon","Wed","Fri"]
+      cardio_mobility_days: ["Tue","Sat"]
+    metrics: ["body_fat_%","muscle_kg","weight_kg","sleep_hours"]
