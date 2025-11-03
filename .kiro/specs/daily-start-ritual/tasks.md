@@ -86,7 +86,9 @@
 
 
 
-  - [-] 4.2 Implement drag-and-drop task ordering
+  - [x] 4.2 Implement drag-and-drop task ordering
+
+
 
 
     - Add drag-and-drop functionality for priority ranking
@@ -97,7 +99,10 @@
 
     - _Requirements: 3.4, 6.4_
 
-  - [ ] 4.3 Add task prioritization algorithms
+  - [-] 4.3 Add task prioritization algorithms
+
+
+
     - Implement priority scoring based on due date, importance, and effort
     - Create context awareness for balancing deep work and shallow tasks
     - Add dependency detection and prerequisite task suggestions

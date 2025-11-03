@@ -4,7 +4,7 @@
 
 import { Task } from '../types/ritual.js';
 import { TaskSelectionController, TaskSelectionUIState, TaskSelectionControllerConfig } from '../controllers/task-selection-controller.js';
-import { DragDropOrdering, DragDropConfig } from './drag-drop-ordering.js';
+import { DragDropOrdering } from './drag-drop-ordering.js';
 
 export interface TaskSelectionInterfaceConfig extends TaskSelectionControllerConfig {
   container?: HTMLElement;

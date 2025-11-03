@@ -91,6 +91,46 @@ await controller.scheduleBlocks([
 const summary = await controller.startFocusSession();
 ```
 
+## Enhanced Drag-and-Drop Task Ordering
+
+The task selection interface includes comprehensive drag-and-drop functionality for intuitive task prioritization:
+
+### Mouse/Trackpad Usage
+```typescript
+// Initialize with drag-and-drop enabled
+const taskInterface = new TaskSelectionInterface({
+  container: document.getElementById('task-selection'),
+  enableKeyboardShortcuts: true,
+  showPriorityScores: true
+});
+
+// Users can drag tasks by the handle (⋮⋮) to reorder
+// Visual feedback shows drop zones and position changes
+```
+
+### Touch Device Support
+- **Long Press**: Hold the drag handle for 500ms to initiate drag
+- **Haptic Feedback**: Vibration confirms drag start (if supported)
+- **Visual Cues**: Touch-active states and smooth animations
+- **Gesture Recognition**: Distinguishes between scrolling and dragging
+
+### Keyboard Accessibility
+```typescript
+// Focus a task and use keyboard shortcuts:
+// Ctrl+↑ - Move task up one position
+// Ctrl+↓ - Move task down one position  
+// Ctrl+Home - Move task to top priority
+// Ctrl+End - Move task to bottom priority
+// Delete/Backspace - Remove from selection
+```
+
+### Visual Indicators
+- **Priority Numbers**: Clear 1-6 numbering with color coding
+- **Frog Task**: Special highlighting for the most important task (#1)
+- **Drop Zones**: Visual feedback during drag operations
+- **Position Changes**: Real-time preview of new positions
+- **Success/Cancel Animations**: Feedback for completed or cancelled moves
+
 ## Requirements Compliance
 
 This implementation satisfies the following requirements from the specification:
@@ -113,10 +153,18 @@ This implementation satisfies the following requirements from the specification:
 - Recovery from interrupted sessions
 - Complete ritual history tracking
 
+### Enhanced Drag-and-Drop Task Ordering
+- **Visual Indicators**: Clear priority numbers, importance markers, and frog task highlighting
+- **Touch-Friendly**: Long-press gesture support with haptic feedback for mobile devices
+- **Keyboard Navigation**: Full keyboard shortcuts (Ctrl+↑/↓, Ctrl+Home/End) for accessibility
+- **Visual Feedback**: Smooth animations, drop zones, and position indicators during reordering
+- **Accessibility**: Screen reader support, ARIA labels, and high contrast mode compatibility
+
 ### Keyboard Navigation
 - Full keyboard shortcut support
 - Tab-based step navigation
 - Quick completion shortcuts
+- Enhanced task reordering shortcuts
 - Accessibility compliance
 
 ### Data Integrity
