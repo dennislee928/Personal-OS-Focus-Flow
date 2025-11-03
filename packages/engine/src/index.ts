@@ -20,6 +20,12 @@ export { CaptureService, type CaptureServiceConfig, type CaptureResult } from '.
 export { VoiceService, type VoiceServiceConfig, VoiceStatus, VoiceError } from './services/voice-service.js';
 export { InboxService, type InboxServiceConfig, type InboxIntegration, type InboxFilter } from './services/inbox-service.js';
 export { ClarifyService, type ClarifyServiceConfig, type ClarifySession, type BatchCriteria } from './services/clarify-service.js';
+export { DelegationService, type DelegationServiceConfig, type Assignee, type DeferralTemplate } from './services/delegation-service.js';
+
+// Components
+export { AssigneeSelector, type AssigneeSelectorConfig, type AssigneeSelectorState } from './components/assignee-selector.js';
+export { DueDatePicker, type DueDatePickerConfig, type DueDatePickerState } from './components/due-date-picker.js';
+export { ContextTagger, type ContextTaggerConfig, type ContextTaggerState } from './components/context-tagger.js';
 
 // Adapters
 export * from './adapters/index.js';
@@ -30,6 +36,7 @@ import { CaptureService } from './services/capture-service.js';
 import { VoiceService } from './services/voice-service.js';
 import { InboxService, InboxIntegration } from './services/inbox-service.js';
 import { ClarifyService } from './services/clarify-service.js';
+import { DelegationService } from './services/delegation-service.js';
 import { CaptureController } from './controllers/capture-controller.js';
 import { ClarifyController } from './controllers/clarify-controller.js';
 import { RitualWorkflowEngine } from './workflow/ritual-engine.js';
@@ -48,7 +55,8 @@ export function createRitualSystem(storageAdapter: StorageAdapter, inboxIntegrat
   
   // Create clarify system
   const clarifyService = new ClarifyService();
-  const clarifyController = new ClarifyController(clarifyService);
+  const delegationService = new DelegationService();
+  const clarifyController = new ClarifyController(clarifyService, delegationService);
   
   return {
     engine,
@@ -59,6 +67,7 @@ export function createRitualSystem(storageAdapter: StorageAdapter, inboxIntegrat
     inboxService,
     captureController,
     clarifyService,
+    delegationService,
     clarifyController
   };
 }

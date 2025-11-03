@@ -9,11 +9,18 @@ export { RitualStateMachine } from './workflow/state-machine.js';
 // Controllers
 export { RitualController } from './controllers/ritual-controller.js';
 export { CaptureController } from './controllers/capture-controller.js';
+export { ClarifyController } from './controllers/clarify-controller.js';
 // Services
 export { PersistenceService } from './services/persistence-service.js';
 export { CaptureService } from './services/capture-service.js';
 export { VoiceService, VoiceStatus, VoiceError } from './services/voice-service.js';
 export { InboxService } from './services/inbox-service.js';
+export { ClarifyService } from './services/clarify-service.js';
+export { DelegationService } from './services/delegation-service.js';
+// Components
+export { AssigneeSelector } from './components/assignee-selector.js';
+export { DueDatePicker } from './components/due-date-picker.js';
+export { ContextTagger } from './components/context-tagger.js';
 // Adapters
 export * from './adapters/index.js';
 // Factory function for easy setup
@@ -21,7 +28,10 @@ import { PersistenceService } from './services/persistence-service.js';
 import { CaptureService } from './services/capture-service.js';
 import { VoiceService } from './services/voice-service.js';
 import { InboxService } from './services/inbox-service.js';
+import { ClarifyService } from './services/clarify-service.js';
+import { DelegationService } from './services/delegation-service.js';
 import { CaptureController } from './controllers/capture-controller.js';
+import { ClarifyController } from './controllers/clarify-controller.js';
 import { RitualWorkflowEngine } from './workflow/ritual-engine.js';
 import { RitualController } from './controllers/ritual-controller.js';
 export function createRitualSystem(storageAdapter, inboxIntegration) {
@@ -33,6 +43,10 @@ export function createRitualSystem(storageAdapter, inboxIntegration) {
     const captureService = new CaptureService({}, inboxService);
     const voiceService = new VoiceService();
     const captureController = new CaptureController(captureService, voiceService);
+    // Create clarify system
+    const clarifyService = new ClarifyService();
+    const delegationService = new DelegationService();
+    const clarifyController = new ClarifyController(clarifyService, delegationService);
     return {
         engine,
         controller,
@@ -40,6 +54,9 @@ export function createRitualSystem(storageAdapter, inboxIntegration) {
         captureService,
         voiceService,
         inboxService,
-        captureController
+        captureController,
+        clarifyService,
+        delegationService,
+        clarifyController
     };
 }
