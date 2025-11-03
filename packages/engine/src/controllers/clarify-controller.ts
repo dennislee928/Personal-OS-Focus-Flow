@@ -4,6 +4,10 @@
 
 import { InboxItem, ClarifyDecision } from '../types/ritual.js';
 import { ClarifyService, ClarifySession, BatchCriteria } from '../services/clarify-service.js';
+import { DelegationService, Assignee } from '../services/delegation-service.js';
+import { AssigneeSelector, AssigneeSelectorState } from '../components/assignee-selector.js';
+import { DueDatePicker, DueDatePickerState } from '../components/due-date-picker.js';
+import { ContextTagger, ContextTaggerState } from '../components/context-tagger.js';
 
 export interface ClarifyControllerConfig {
   enableKeyboardShortcuts: boolean;
@@ -24,6 +28,9 @@ export interface DecisionInterfaceState {
     total: number;
     percentage: number;
   };
+  assigneeSelector: AssigneeSelectorState | null;
+  dueDatePicker: DueDatePickerState | null;
+  contextTagger: ContextTaggerState | null;
 }
 
 export interface KeyboardShortcuts {
@@ -49,8 +56,12 @@ export interface DecisionFormData {
 
 export class ClarifyController {
   private clarifyService: ClarifyService;
+  private delegationService: DelegationService;
   private config: ClarifyControllerConfig;
   private timerInterval?: NodeJS.Timeout;
+  private assigneeSelector: AssigneeSelector;
+  private dueDatePicker: DueDatePicker;
+  private contextTagger: ContextTagger;
   private keyboardShortcuts: KeyboardShortcuts = {
     doAction: 'd',
     delegateAction: 'g',
@@ -63,8 +74,13 @@ export class ClarifyController {
     disableBatch: 'Escape'
   };
 
-  constructor(clarifyService: ClarifyService, config: Partial<ClarifyControllerConfig> = {}) {
+  constructor(
+    clarifyService: ClarifyService, 
+    delegationService?: DelegationService,
+    config: Partial<ClarifyControllerConfig> = {}
+  ) {
     this.clarifyService = clarifyService;
+    this.delegationService = delegationService || new DelegationService();
     this.config = {
       enableKeyboardShortcuts: true,
       showProgressIndicator: true,
@@ -72,6 +88,11 @@ export class ClarifyController {
       autoStartTimer: true,
       ...config
     };
+
+    // Initialize UI components
+    this.assigneeSelector = new AssigneeSelector(this.delegationService);
+    this.dueDatePicker = new DueDatePicker(this.delegationService);
+    this.contextTagger = new ContextTagger();
   }
 
   /**
@@ -84,6 +105,12 @@ export class ClarifyController {
 
     // Start clarify session
     const session = this.clarifyService.startSession(items);
+    
+    // Initialize UI components for first item
+    const currentItem = this.clarifyService.getCurrentItem();
+    if (currentItem) {
+      await this.initializeUIComponentsForItem(currentItem);
+    }
     
     // Auto-start timer for first item if enabled
     if (this.config.autoStartTimer) {
@@ -118,7 +145,10 @@ export class ClarifyController {
       isTimerActive,
       batchMode: session?.batchMode || false,
       batchSuggestions,
-      progress
+      progress,
+      assigneeSelector: this.assigneeSelector.getState(),
+      dueDatePicker: this.dueDatePicker.getState(),
+      contextTagger: this.contextTagger.getState()
     };
   }
 
@@ -140,17 +170,35 @@ export class ClarifyController {
    * Make a decision for the current item
    */
   async makeDecision(formData: DecisionFormData): Promise<DecisionInterfaceState> {
-    // Validate form data
-    this.validateDecisionForm(formData);
+    // Validate complete decision including UI components
+    const validation = this.validateCompleteDecision(formData);
+    if (!validation.isValid) {
+      throw new Error(`Decision validation failed: ${validation.errors.join(', ')}`);
+    }
 
-    // Create decision object
+    // Get values from UI components
+    const assigneeId = this.assigneeSelector.getSelectedAssigneeId();
+    const selectedDate = this.dueDatePicker.getSelectedDate();
+    const selectedContext = this.contextTagger.getSelectedContext();
+
+    // Create decision object with UI component values
     const decision: Omit<ClarifyDecision, 'itemId'> = {
       action: formData.action,
-      assignee: formData.assignee,
-      dueDate: formData.dueDate,
+      assignee: formData.action === 'delegate' ? assigneeId || formData.assignee : formData.assignee,
+      dueDate: formData.action === 'defer' ? selectedDate || formData.dueDate : formData.dueDate,
       estimatedDuration: formData.estimatedDuration,
-      context: formData.context
+      context: selectedContext as '@deep' | '@shallow'
     };
+
+    // Process delegation/deferral through delegation service
+    const currentItem = this.clarifyService.getCurrentItem();
+    if (currentItem) {
+      if (decision.action === 'delegate') {
+        await this.delegationService.processDelegation(decision as ClarifyDecision, currentItem);
+      } else if (decision.action === 'defer') {
+        await this.delegationService.processDeferral(decision as ClarifyDecision, currentItem);
+      }
+    }
 
     // Make the decision
     this.clarifyService.makeDecision(decision);
@@ -158,6 +206,11 @@ export class ClarifyController {
     // Auto-start timer for next item if enabled and not in batch mode
     const session = this.clarifyService.getCurrentSession();
     if (this.config.autoStartTimer && !session?.batchMode && !this.clarifyService.isSessionComplete()) {
+      // Initialize UI components for next item
+      const nextItem = this.clarifyService.getCurrentItem();
+      if (nextItem) {
+        await this.initializeUIComponentsForItem(nextItem);
+      }
       this.startTwoMinuteTimer();
     }
 
@@ -234,6 +287,12 @@ export class ClarifyController {
   async nextItem(): Promise<DecisionInterfaceState> {
     this.clarifyService.advanceToNextItem();
     
+    // Initialize UI components for new item
+    const currentItem = this.clarifyService.getCurrentItem();
+    if (currentItem) {
+      await this.initializeUIComponentsForItem(currentItem);
+    }
+    
     // Auto-start timer for new item if enabled
     if (this.config.autoStartTimer && !this.clarifyService.isSessionComplete()) {
       this.startTwoMinuteTimer();
@@ -247,6 +306,12 @@ export class ClarifyController {
    */
   async previousItem(): Promise<DecisionInterfaceState> {
     this.clarifyService.goToPreviousItem();
+    
+    // Initialize UI components for item
+    const currentItem = this.clarifyService.getCurrentItem();
+    if (currentItem) {
+      await this.initializeUIComponentsForItem(currentItem);
+    }
     
     // Auto-start timer for item if enabled
     if (this.config.autoStartTimer) {
@@ -350,45 +415,145 @@ export class ClarifyController {
   }
 
   /**
+   * Initialize UI components for current item
+   */
+  async initializeUIComponentsForItem(item: InboxItem): Promise<void> {
+    await Promise.all([
+      this.assigneeSelector.initializeForItem(item),
+      this.dueDatePicker.initializeForItem(item),
+      this.contextTagger.initializeForItem(item)
+    ]);
+  }
+
+  /**
+   * Get assignee selector interface
+   */
+  getAssigneeSelector(): AssigneeSelector {
+    return this.assigneeSelector;
+  }
+
+  /**
+   * Get due date picker interface
+   */
+  getDueDatePicker(): DueDatePicker {
+    return this.dueDatePicker;
+  }
+
+  /**
+   * Get context tagger interface
+   */
+  getContextTagger(): ContextTagger {
+    return this.contextTagger;
+  }
+
+  /**
+   * Add assignee to delegation service
+   */
+  addAssignee(assignee: Assignee): void {
+    this.delegationService.addAssignee(assignee);
+  }
+
+  /**
+   * Get available assignees
+   */
+  getAvailableAssignees(): Assignee[] {
+    return this.delegationService.getAssignees();
+  }
+
+  /**
+   * Validate complete decision form
+   */
+  validateCompleteDecision(formData: DecisionFormData): {
+    isValid: boolean;
+    errors: string[];
+    warnings: string[];
+  } {
+    const errors: string[] = [];
+    const warnings: string[] = [];
+
+    // Validate basic form
+    const basicValidation = this.validateDecisionForm(formData);
+    errors.push(...basicValidation.errors);
+    warnings.push(...basicValidation.warnings);
+
+    // Validate action-specific components
+    switch (formData.action) {
+      case 'delegate':
+        const assigneeValidation = this.assigneeSelector.validateSelection();
+        errors.push(...assigneeValidation.errors);
+        warnings.push(...assigneeValidation.warnings);
+        break;
+      
+      case 'defer':
+        const dateValidation = this.dueDatePicker.validateSelection();
+        errors.push(...dateValidation.errors);
+        warnings.push(...dateValidation.warnings);
+        break;
+    }
+
+    // Validate context
+    const contextValidation = this.contextTagger.validateSelection();
+    errors.push(...contextValidation.errors);
+    warnings.push(...contextValidation.warnings);
+
+    return {
+      isValid: errors.length === 0,
+      errors: [...new Set(errors)], // Remove duplicates
+      warnings: [...new Set(warnings)] // Remove duplicates
+    };
+  }
+
+  /**
    * Cleanup resources
    */
   destroy(): void {
     this.stopTimerUpdates();
   }
 
-  private validateDecisionForm(formData: DecisionFormData): void {
+  private validateDecisionForm(formData: DecisionFormData): {
+    isValid: boolean;
+    errors: string[];
+    warnings: string[];
+  } {
+    const errors: string[] = [];
+    const warnings: string[] = [];
     // Validate action
     if (!['do', 'delegate', 'defer'].includes(formData.action)) {
-      throw new Error('Invalid action type');
+      errors.push('Invalid action type');
     }
 
     // Validate action-specific fields
     switch (formData.action) {
       case 'delegate':
         if (!formData.assignee || formData.assignee.trim() === '') {
-          throw new Error('Assignee is required for delegated items');
+          errors.push('Assignee is required for delegated items');
         }
         break;
       
       case 'defer':
         if (!formData.dueDate) {
-          throw new Error('Due date is required for deferred items');
-        }
-        if (formData.dueDate <= new Date()) {
-          throw new Error('Due date must be in the future');
+          errors.push('Due date is required for deferred items');
+        } else if (formData.dueDate <= new Date()) {
+          errors.push('Due date must be in the future');
         }
         break;
     }
 
     // Validate context
     if (!['@deep', '@shallow'].includes(formData.context)) {
-      throw new Error('Context must be either @deep or @shallow');
+      errors.push('Context must be either @deep or @shallow');
     }
 
     // Validate estimated duration
     if (!formData.estimatedDuration || formData.estimatedDuration <= 0) {
-      throw new Error('Estimated duration must be greater than 0');
+      errors.push('Estimated duration must be greater than 0');
     }
+
+    return {
+      isValid: errors.length === 0,
+      errors,
+      warnings
+    };
   }
 
   private async makeQuickDecision(action: 'do' | 'delegate' | 'defer'): Promise<DecisionInterfaceState> {
