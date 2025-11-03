@@ -6,6 +6,8 @@ export class DragDropOrdering {
     state;
     touchStartPos = null;
     keyboardFocusIndex = -1;
+    longPressTimer = null;
+    longPressDelay = 500; // ms
     constructor(config) {
         this.config = {
             dragClass: 'dragging',
@@ -47,6 +49,7 @@ export class DragDropOrdering {
      * Destroy the drag-drop functionality
      */
     destroy() {
+        this.cancelLongPress();
         this.config.container.removeEventListener('mousedown', this.handleMouseDown);
         this.config.container.removeEventListener('touchstart', this.handleTouchStart);
         this.config.container.removeEventListener('keydown', this.handleKeyDown);
@@ -54,6 +57,8 @@ export class DragDropOrdering {
         document.removeEventListener('mouseup', this.handleMouseUp);
         document.removeEventListener('touchmove', this.handleTouchMove);
         document.removeEventListener('touchend', this.handleTouchEnd);
+        document.removeEventListener('touchmove', this.handleTouchMoveEarly);
+        document.removeEventListener('touchend', this.handleTouchEndEarly);
     }
     setupMouseEvents() {
         // Remove existing listeners
@@ -102,18 +107,61 @@ export class DragDropOrdering {
         const item = this.findDraggableItem(touch.target);
         if (!item)
             return;
+        // Check if we touched the handle (if specified)
+        if (this.config.handleSelector) {
+            const handle = touch.target.closest(this.config.handleSelector);
+            if (!handle || !item.contains(handle))
+                return;
+        }
         // Store initial touch position for gesture detection
         this.touchStartPos = { x: touch.clientX, y: touch.clientY };
-        // Start drag after a short delay to distinguish from scrolling
-        setTimeout(() => {
+        // Add visual feedback for touch
+        item.classList.add('touch-active');
+        // Start long press timer for drag initiation
+        this.longPressTimer = window.setTimeout(() => {
             if (this.touchStartPos) {
+                // Provide haptic feedback if available
+                if ('vibrate' in navigator) {
+                    navigator.vibrate(50);
+                }
                 e.preventDefault();
                 this.startDrag(item, touch.clientX, touch.clientY);
                 document.addEventListener('touchmove', this.handleTouchMove, { passive: false });
                 document.addEventListener('touchend', this.handleTouchEnd);
             }
-        }, 150);
+        }, this.longPressDelay);
+        // Add temporary listeners for canceling long press
+        document.addEventListener('touchmove', this.handleTouchMoveEarly, { passive: false });
+        document.addEventListener('touchend', this.handleTouchEndEarly);
     };
+    handleTouchMoveEarly = (e) => {
+        if (!this.touchStartPos || e.touches.length !== 1)
+            return;
+        const touch = e.touches[0];
+        const deltaX = Math.abs(touch.clientX - this.touchStartPos.x);
+        const deltaY = Math.abs(touch.clientY - this.touchStartPos.y);
+        // Cancel long press if user moves too much (likely scrolling)
+        if (deltaX > 10 || deltaY > 10) {
+            this.cancelLongPress();
+        }
+    };
+    handleTouchEndEarly = () => {
+        this.cancelLongPress();
+    };
+    cancelLongPress() {
+        if (this.longPressTimer) {
+            clearTimeout(this.longPressTimer);
+            this.longPressTimer = null;
+        }
+        // Remove touch feedback
+        const items = this.getDraggableItems();
+        items.forEach(item => item.classList.remove('touch-active'));
+        // Remove early listeners
+        document.removeEventListener('touchmove', this.handleTouchMoveEarly);
+        document.removeEventListener('touchend', this.handleTouchEndEarly);
+        this.touchStartPos = null;
+    }
+    ;
     handleTouchMove = (e) => {
         if (!this.state.isDragging || e.touches.length !== 1)
             return;
@@ -122,7 +170,7 @@ export class DragDropOrdering {
         this.updateDragPosition(touch.clientX, touch.clientY);
     };
     handleTouchEnd = (e) => {
-        this.touchStartPos = null;
+        this.cancelLongPress();
         if (this.state.isDragging) {
             this.endDrag();
         }
@@ -199,26 +247,91 @@ export class DragDropOrdering {
         this.state.isDragging = true;
         this.state.draggedItem = item;
         this.state.draggedIndex = this.getItemIndex(item);
-        // Add dragging class
+        // Add dragging class and visual feedback
         item.classList.add(this.config.dragClass);
+        item.classList.remove('touch-active');
         // Add drop zone class to container
         this.config.container.classList.add(this.config.dropZoneClass);
+        // Add visual indicators to all items
+        this.addDragVisualIndicators();
         // Insert placeholder
         if (this.state.placeholder) {
             item.parentNode?.insertBefore(this.state.placeholder, item.nextSibling);
+            this.updatePlaceholderContent();
         }
+        // Set initial drag position for visual feedback
+        this.updateDragVisualPosition(item, x, y);
         // Notify drag start
         this.config.onDragStart?.(this.getItemId(item), this.state.draggedIndex);
+    }
+    addDragVisualIndicators() {
+        const items = this.getDraggableItems();
+        items.forEach((item, index) => {
+            if (item !== this.state.draggedItem) {
+                item.classList.add('drag-target');
+                // Add position indicators
+                const positionIndicator = document.createElement('div');
+                positionIndicator.className = 'position-indicator';
+                positionIndicator.textContent = `${index + 1}`;
+                item.appendChild(positionIndicator);
+            }
+        });
+    }
+    removeDragVisualIndicators() {
+        const items = this.getDraggableItems();
+        items.forEach(item => {
+            item.classList.remove('drag-target', 'drag-over');
+            // Remove position indicators
+            const indicator = item.querySelector('.position-indicator');
+            if (indicator) {
+                indicator.remove();
+            }
+        });
+    }
+    updateDragVisualPosition(item, x, y) {
+        // Add visual drag feedback (could be used for custom drag ghost)
+        item.style.transform = `translate(${x - item.offsetLeft}px, ${y - item.offsetTop}px)`;
+        item.style.zIndex = '1000';
+    }
+    updatePlaceholderContent() {
+        if (!this.state.placeholder || !this.state.draggedItem)
+            return;
+        const draggedIndex = this.state.draggedIndex;
+        const newIndex = this.getPlaceholderIndex();
+        this.state.placeholder.innerHTML = `
+      <div class="placeholder-content">
+        <div class="placeholder-text">Drop here</div>
+        <div class="placeholder-position">Position ${newIndex + 1}</div>
+        <div class="placeholder-change">
+          ${newIndex !== draggedIndex ?
+            `Moving from ${draggedIndex + 1} to ${newIndex + 1}` :
+            'No change'}
+        </div>
+      </div>
+    `;
+    }
+    getPlaceholderIndex() {
+        if (!this.state.placeholder)
+            return -1;
+        const items = Array.from(this.config.container.children);
+        return items.indexOf(this.state.placeholder);
     }
     updateDragPosition(x, y) {
         if (!this.state.draggedItem || !this.state.placeholder)
             return;
+        // Update visual position of dragged item
+        this.updateDragVisualPosition(this.state.draggedItem, x, y);
         // Find the item under the cursor
         const elementBelow = document.elementFromPoint(x, y);
         const targetItem = elementBelow ? this.findDraggableItem(elementBelow) : null;
+        // Remove previous drag-over indicators
+        const items = this.getDraggableItems();
+        items.forEach(item => item.classList.remove('drag-over'));
         if (targetItem && targetItem !== this.state.draggedItem) {
             const targetIndex = this.getItemIndex(targetItem);
             const draggedIndex = this.getItemIndex(this.state.draggedItem);
+            // Add drag-over visual feedback
+            targetItem.classList.add('drag-over');
             // Determine insertion point
             const rect = targetItem.getBoundingClientRect();
             const midpoint = rect.top + rect.height / 2;
@@ -235,6 +348,8 @@ export class DragDropOrdering {
             if (this.state.dropIndex > draggedIndex) {
                 this.state.dropIndex--;
             }
+            // Update placeholder content with new position info
+            this.updatePlaceholderContent();
         }
     }
     endDrag() {
@@ -243,16 +358,32 @@ export class DragDropOrdering {
         const draggedItem = this.state.draggedItem;
         const fromIndex = this.state.draggedIndex;
         let toIndex = this.state.dropIndex;
-        // Remove dragging classes
+        // Remove dragging classes and reset visual state
         draggedItem.classList.remove(this.config.dragClass);
+        draggedItem.style.transform = '';
+        draggedItem.style.zIndex = '';
         this.config.container.classList.remove(this.config.dropZoneClass);
+        // Remove all visual indicators
+        this.removeDragVisualIndicators();
         // Move the actual item if position changed
         if (toIndex >= 0 && toIndex !== fromIndex && this.state.placeholder) {
             this.state.placeholder.parentNode?.insertBefore(draggedItem, this.state.placeholder);
             // Recalculate final index
             toIndex = this.getItemIndex(draggedItem);
+            // Add success animation
+            draggedItem.classList.add('drop-success');
+            setTimeout(() => {
+                draggedItem.classList.remove('drop-success');
+            }, 300);
             // Notify reorder
             this.config.onReorder?.(fromIndex, toIndex, this.getItemId(draggedItem));
+        }
+        else {
+            // Add cancel animation if no change
+            draggedItem.classList.add('drop-cancel');
+            setTimeout(() => {
+                draggedItem.classList.remove('drop-cancel');
+            }, 200);
         }
         // Remove placeholder
         if (this.state.placeholder && this.state.placeholder.parentNode) {
@@ -274,6 +405,8 @@ export class DragDropOrdering {
         const item = items[fromIndex];
         const targetItem = items[toIndex];
         const itemId = this.getItemId(item);
+        // Add keyboard move animation
+        item.classList.add('keyboard-moving');
         // Move DOM element
         if (toIndex > fromIndex) {
             targetItem.parentNode?.insertBefore(item, targetItem.nextSibling);
@@ -281,22 +414,61 @@ export class DragDropOrdering {
         else {
             targetItem.parentNode?.insertBefore(item, targetItem);
         }
+        // Remove animation class after animation completes
+        setTimeout(() => {
+            item.classList.remove('keyboard-moving');
+        }, 200);
         // Focus the moved item
         this.focusItem(toIndex);
+        // Provide audio feedback for accessibility
+        this.announceMove(fromIndex + 1, toIndex + 1);
         // Notify reorder
         this.config.onReorder?.(fromIndex, toIndex, itemId);
+    }
+    announceMove(fromPosition, toPosition) {
+        // Create accessible announcement for screen readers
+        const announcement = document.createElement('div');
+        announcement.setAttribute('aria-live', 'polite');
+        announcement.setAttribute('aria-atomic', 'true');
+        announcement.className = 'sr-only';
+        announcement.textContent = `Task moved from position ${fromPosition} to position ${toPosition}`;
+        document.body.appendChild(announcement);
+        // Remove after announcement
+        setTimeout(() => {
+            document.body.removeChild(announcement);
+        }, 1000);
     }
     focusItem(index) {
         const items = this.getDraggableItems();
         if (index >= 0 && index < items.length) {
             const item = items[index];
+            // Remove previous keyboard focus indicators
+            items.forEach(i => i.classList.remove('keyboard-focused'));
+            // Add keyboard focus indicator
+            item.classList.add('keyboard-focused');
             item.focus();
             this.keyboardFocusIndex = index;
+            // Scroll into view if needed
+            item.scrollIntoView({
+                behavior: 'smooth',
+                block: 'nearest',
+                inline: 'nearest'
+            });
         }
     }
     createPlaceholder() {
         this.state.placeholder = document.createElement('div');
         this.state.placeholder.className = this.config.placeholderClass;
-        this.state.placeholder.innerHTML = '<div class="placeholder-content">Drop here</div>';
+        this.state.placeholder.innerHTML = `
+      <div class="placeholder-content">
+        <div class="placeholder-icon">⬇</div>
+        <div class="placeholder-text">Drop here</div>
+        <div class="placeholder-position"></div>
+        <div class="placeholder-change"></div>
+      </div>
+    `;
+        // Add accessibility attributes
+        this.state.placeholder.setAttribute('role', 'region');
+        this.state.placeholder.setAttribute('aria-label', 'Drop zone for reordering tasks');
     }
 }

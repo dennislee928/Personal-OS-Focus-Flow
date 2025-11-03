@@ -26,6 +26,8 @@ export declare class DragDropOrdering {
     private state;
     private touchStartPos;
     private keyboardFocusIndex;
+    private longPressTimer;
+    private longPressDelay;
     constructor(config: DragDropConfig);
     /**
      * Initialize drag and drop functionality
@@ -46,6 +48,9 @@ export declare class DragDropOrdering {
     private handleMouseMove;
     private handleMouseUp;
     private handleTouchStart;
+    private handleTouchMoveEarly;
+    private handleTouchEndEarly;
+    private cancelLongPress;
     private handleTouchMove;
     private handleTouchEnd;
     private handleKeyDown;
@@ -54,9 +59,15 @@ export declare class DragDropOrdering {
     private getItemId;
     private getItemIndex;
     private startDrag;
+    private addDragVisualIndicators;
+    private removeDragVisualIndicators;
+    private updateDragVisualPosition;
+    private updatePlaceholderContent;
+    private getPlaceholderIndex;
     private updateDragPosition;
     private endDrag;
     private moveItem;
+    private announceMove;
     private focusItem;
     private createPlaceholder;
 }

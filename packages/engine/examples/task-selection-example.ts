@@ -259,7 +259,14 @@ function demonstrateTaskSelectionController() {
 function demonstrateTaskSelectionInterface() {
   console.log('\n=== Task Selection Interface Demo ===\n');
   console.log('This example requires a browser environment with DOM support.');
-  console.log('To use the TaskSelectionInterface:');
+  console.log('The TaskSelectionInterface now includes enhanced drag-and-drop functionality:');
+  console.log('  ✨ Visual indicators for task order and importance');
+  console.log('  📱 Touch-friendly reordering for mobile compatibility');
+  console.log('  ⌨️ Keyboard shortcuts for reordering without mouse');
+  console.log('  🎨 Enhanced visual feedback and animations');
+  console.log('  ♿ Accessibility features and screen reader support');
+  console.log('');
+  console.log('To use the enhanced TaskSelectionInterface:');
   console.log(`
   const interface = new TaskSelectionInterface({
     container: document.getElementById('task-selection'),
@@ -275,7 +282,16 @@ function demonstrateTaskSelectionInterface() {
 
   // Show the interface with available tasks
   interface.show(sampleTasks);
+  
+  // Enhanced drag-and-drop features:
+  // - Drag tasks by the handle (⋮⋮) to reorder
+  // - Long press on mobile to start dragging
+  // - Use Ctrl+↑/↓ to move tasks with keyboard
+  // - Use Ctrl+Home/End to move to top/bottom
+  // - Visual feedback shows drop zones and position changes
   `);
+  console.log('');
+  console.log('For a complete interactive demo, see: examples/drag-drop-example.ts');
 }
 
 // Run examples

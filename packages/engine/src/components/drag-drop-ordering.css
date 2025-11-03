@@ -1,0 +1,360 @@
+/**
+ * Drag and Drop Ordering Styles
+ * Enhanced visual indicators for task reordering
+ */
+
+/* Base drag-drop container */
+.drop-zone {
+  position: relative;
+}
+
+.drop-zone-active {
+  background-color: rgba(59, 130, 246, 0.05);
+  border: 2px dashed rgba(59, 130, 246, 0.3);
+  border-radius: 8px;
+}
+
+/* Draggable items */
+.selected-task-item {
+  position: relative;
+  transition: all 0.2s ease;
+  border-radius: 6px;
+  margin-bottom: 8px;
+  background: white;
+  border: 1px solid #e5e7eb;
+}
+
+.selected-task-item:hover {
+  border-color: #d1d5db;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Drag handle */
+.drag-handle {
+  cursor: grab;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #9ca3af;
+  transition: color 0.2s ease;
+}
+
+.drag-handle:hover {
+  color: #6b7280;
+}
+
+.drag-handle:active {
+  cursor: grabbing;
+}
+
+.drag-icon {
+  font-size: 14px;
+  line-height: 1;
+}
+
+/* Dragging states */
+.dragging {
+  opacity: 0.8;
+  transform: rotate(2deg);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  border-color: #3b82f6;
+  background: #f8fafc;
+}
+
+.drag-target {
+  border-color: #e5e7eb;
+  background: #fafafa;
+}
+
+.drag-over {
+  border-color: #3b82f6;
+  background: rgba(59, 130, 246, 0.05);
+  transform: scale(1.02);
+}
+
+/* Touch interactions */
+.touch-active {
+  background: rgba(59, 130, 246, 0.1);
+  transform: scale(0.98);
+}
+
+/* Keyboard focus */
+.keyboard-focused {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+  border-color: #3b82f6;
+}
+
+/* Animation states */
+.keyboard-moving {
+  animation: keyboardMove 0.2s ease-out;
+  border-color: #10b981;
+  background: rgba(16, 185, 129, 0.1);
+}
+
+.drop-success {
+  animation: dropSuccess 0.3s ease-out;
+}
+
+.drop-cancel {
+  animation: dropCancel 0.2s ease-out;
+}
+
+@keyframes keyboardMove {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes dropSuccess {
+  0% {
+    transform: scale(1);
+    background: rgba(16, 185, 129, 0.1);
+  }
+  50% {
+    transform: scale(1.03);
+    background: rgba(16, 185, 129, 0.2);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+  }
+  100% {
+    transform: scale(1);
+    background: white;
+  }
+}
+
+@keyframes dropCancel {
+  0% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-4px);
+  }
+  75% {
+    transform: translateX(4px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+/* Placeholder styles */
+.drag-placeholder {
+  min-height: 60px;
+  margin: 8px 0;
+  border: 2px dashed #3b82f6;
+  border-radius: 8px;
+  background: rgba(59, 130, 246, 0.05);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: placeholderPulse 1.5s ease-in-out infinite;
+}
+
+.placeholder-content {
+  text-align: center;
+  color: #3b82f6;
+  font-size: 14px;
+}
+
+.placeholder-icon {
+  font-size: 20px;
+  margin-bottom: 4px;
+  animation: bounce 1s ease-in-out infinite;
+}
+
+.placeholder-text {
+  font-weight: 500;
+  margin-bottom: 2px;
+}
+
+.placeholder-position {
+  font-size: 12px;
+  opacity: 0.8;
+}
+
+.placeholder-change {
+  font-size: 11px;
+  opacity: 0.6;
+  margin-top: 2px;
+}
+
+@keyframes placeholderPulse {
+  0%, 100% {
+    background: rgba(59, 130, 246, 0.05);
+  }
+  50% {
+    background: rgba(59, 130, 246, 0.1);
+  }
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+/* Position indicators */
+.position-indicator {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  background: #3b82f6;
+  color: white;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: bold;
+  z-index: 10;
+}
+
+/* Priority indicators */
+.task-priority-number {
+  background: #f3f4f6;
+  color: #374151;
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 12px;
+  font-weight: 600;
+  min-width: 24px;
+  text-align: center;
+  margin-right: 8px;
+}
+
+.selected-task-item:first-child .task-priority-number {
+  background: #fef3c7;
+  color: #d97706;
+}
+
+.selected-task-item:nth-child(2) .task-priority-number {
+  background: #fce7f3;
+  color: #be185d;
+}
+
+.selected-task-item:nth-child(3) .task-priority-number {
+  background: #e0f2fe;
+  color: #0369a1;
+}
+
+/* Frog task indicator */
+.frog-indicator {
+  background: #fef3c7;
+  color: #d97706;
+  padding: 2px 6px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+/* Ordering instructions */
+.ordering-instructions {
+  margin-top: 12px;
+  padding: 12px;
+  background: #f8fafc;
+  border-radius: 6px;
+  border-left: 3px solid #3b82f6;
+}
+
+.ordering-instructions p {
+  margin: 0 0 4px 0;
+  font-size: 13px;
+  color: #64748b;
+}
+
+.ordering-instructions p:last-child {
+  margin-bottom: 0;
+}
+
+/* Accessibility */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+  .drag-handle {
+    padding: 12px;
+  }
+  
+  .drag-icon {
+    font-size: 16px;
+  }
+  
+  .selected-task-item {
+    margin-bottom: 12px;
+  }
+  
+  .placeholder-content {
+    font-size: 16px;
+  }
+  
+  .position-indicator {
+    width: 24px;
+    height: 24px;
+    font-size: 12px;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .drag-placeholder {
+    border-color: #000;
+    background: #fff;
+  }
+  
+  .dragging {
+    border-color: #000;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+  }
+  
+  .keyboard-focused {
+    outline-color: #000;
+    border-color: #000;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .selected-task-item,
+  .drag-handle,
+  .dragging,
+  .drag-target,
+  .drag-over,
+  .keyboard-moving,
+  .drop-success,
+  .drop-cancel {
+    transition: none;
+    animation: none;
+  }
+  
+  .placeholder-icon {
+    animation: none;
+  }
+  
+  .drag-placeholder {
+    animation: none;
+  }
+}
