@@ -74,6 +74,7 @@
 
 
 
+
   - [x] 4.1 Build task selection interface
 
 
@@ -85,7 +86,9 @@
 
 
 
-  - [ ] 4.2 Implement drag-and-drop task ordering
+  - [-] 4.2 Implement drag-and-drop task ordering
+
+
     - Add drag-and-drop functionality for priority ranking
     - Create visual indicators for task order and importance
     - Implement touch-friendly reordering for mobile compatibility

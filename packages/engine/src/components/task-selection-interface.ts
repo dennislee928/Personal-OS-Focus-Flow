@@ -44,7 +44,7 @@ export class TaskSelectionInterface {
   constructor(config: TaskSelectionInterfaceConfig = {}) {
     this.config = config;
     this.container = config.container || document.body;
-    
+
     this.state = {
       isVisible: false,
       isLoading: false,
@@ -274,7 +274,7 @@ export class TaskSelectionInterface {
 
     const tasks = this.controller.getDisplayTasks();
     const uiState = this.controller.getUIState();
-    
+
     // Show only unselected tasks in the available list
     const availableTasks = tasks.filter(task => !uiState.selectedTaskIds.includes(task.id));
 
@@ -319,7 +319,7 @@ export class TaskSelectionInterface {
     this.elements.taskList.querySelectorAll('.task-item').forEach(item => {
       const taskId = item.getAttribute('data-task-id')!;
       const selectBtn = item.querySelector('.select-task-btn') as HTMLButtonElement;
-      
+
       const handleSelect = () => {
         if (!selectBtn.disabled) {
           this.controller.selectTask(taskId);
@@ -339,7 +339,7 @@ export class TaskSelectionInterface {
 
     const uiState = this.controller.getUIState();
     const selectedTasks = uiState.tasks.filter(task => uiState.selectedTaskIds.includes(task.id));
-    
+
     // Sort selected tasks by their order in selectedTaskIds
     const orderedTasks = uiState.selectedTaskIds
       .map(id => selectedTasks.find(task => task.id === id))
@@ -380,7 +380,7 @@ export class TaskSelectionInterface {
     // Add event listeners for action buttons
     this.elements.selectedTasksList.querySelectorAll('.selected-task-item').forEach((item, index) => {
       const taskId = item.getAttribute('data-task-id')!;
-      
+
       // Move up button
       const moveUpBtn = item.querySelector('.move-up-btn');
       moveUpBtn?.addEventListener('click', (e) => {
@@ -447,7 +447,7 @@ export class TaskSelectionInterface {
     if (!this.elements.suggestions) return;
 
     const uiState = this.controller.getUIState();
-    
+
     if (!uiState.showSuggestions || uiState.suggestions.length === 0) {
       this.elements.suggestions.parentElement!.style.display = 'none';
       return;
@@ -480,7 +480,7 @@ export class TaskSelectionInterface {
   private renderSelectionCounter(): void {
     const selectedCountEl = this.elements.root?.querySelector('.selected-count');
     const maxCountEl = this.elements.root?.querySelector('.max-count');
-    
+
     if (selectedCountEl) selectedCountEl.textContent = this.state.selectedCount.toString();
     if (maxCountEl) maxCountEl.textContent = this.state.maxTasks.toString();
   }
@@ -505,9 +505,9 @@ export class TaskSelectionInterface {
 
     const uiState = this.controller.getUIState();
     const canComplete = uiState.isValid && uiState.selectedTaskIds.length > 0;
-    
+
     this.elements.completeButton.disabled = !canComplete;
-    this.elements.completeButton.textContent = canComplete 
+    this.elements.completeButton.textContent = canComplete
       ? `Complete Selection (${uiState.selectedTaskIds.length}/6)`
       : 'Select tasks to continue';
   }
@@ -516,7 +516,7 @@ export class TaskSelectionInterface {
     this.state.selectedCount = uiState.selectedTaskIds.length;
     this.state.hasErrors = uiState.validationErrors.length > 0;
     this.state.errorMessages = uiState.validationErrors;
-    
+
     this.render();
   }
 
@@ -591,7 +591,7 @@ export class TaskSelectionInterface {
 
   private toggleWorkloadAnalysis(): void {
     const analysis = this.controller.getWorkloadAnalysis();
-    const dependencies = this.controller.getUIState().selectedTaskIds.map(id => 
+    const dependencies = this.controller.getUIState().selectedTaskIds.map(id =>
       this.controller.getTaskDependencies(id)
     );
 
@@ -630,10 +630,10 @@ export class TaskSelectionInterface {
 
         <div class="dependency-analysis">
           <h5>Dependency Analysis</h5>
-          ${dependencies.some(dep => !dep.canBeCompleted) ? 
-            '<p class="warning">⚠️ Some tasks have unmet dependencies</p>' : 
-            '<p class="success">✅ All dependencies are satisfied</p>'
-          }
+          ${dependencies.some(dep => !dep.canBeCompleted) ?
+        '<p class="warning">⚠️ Some tasks have unmet dependencies</p>' :
+        '<p class="success">✅ All dependencies are satisfied</p>'
+      }
         </div>
       </div>
     `;
