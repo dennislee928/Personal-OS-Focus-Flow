@@ -69,7 +69,9 @@
     - Build validation for required fields based on action type
     - _Requirements: 2.4, 2.5_
 
-- [ ] 4. Create Ivy-6 task selection system
+- [-] 4. Create Ivy-6 task selection system
+
+
   - [ ] 4.1 Build task selection interface
     - Create task list with selection checkboxes and constraint enforcement
     - Implement exactly-six-task validation with clear error messaging
