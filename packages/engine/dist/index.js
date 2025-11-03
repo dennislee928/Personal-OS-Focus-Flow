@@ -11,6 +11,7 @@ export { RitualController } from './controllers/ritual-controller.js';
 export { CaptureController } from './controllers/capture-controller.js';
 export { ClarifyController } from './controllers/clarify-controller.js';
 export { TaskSelectionController } from './controllers/task-selection-controller.js';
+export { ScheduleController } from './controllers/schedule-controller.js';
 // Services
 export { PersistenceService } from './services/persistence-service.js';
 export { CaptureService } from './services/capture-service.js';
@@ -19,12 +20,16 @@ export { InboxService } from './services/inbox-service.js';
 export { ClarifyService } from './services/clarify-service.js';
 export { DelegationService } from './services/delegation-service.js';
 export { TaskSelectionService } from './services/task-selection-service.js';
+export { ScheduleService } from './services/schedule-service.js';
+export { SmartSchedulingService } from './services/smart-scheduling-service.js';
+export { CalendarIntegrationService } from './services/calendar-integration-service.js';
 // Components
 export { AssigneeSelector } from './components/assignee-selector.js';
 export { DueDatePicker } from './components/due-date-picker.js';
 export { ContextTagger } from './components/context-tagger.js';
 export { TaskSelectionInterface } from './components/task-selection-interface.js';
 export { DragDropOrdering } from './components/drag-drop-ordering.js';
+export { SchedulePlanningInterface } from './components/schedule-planning-interface.js';
 // Adapters
 export * from './adapters/index.js';
 // Factory function for easy setup

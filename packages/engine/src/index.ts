@@ -14,6 +14,7 @@ export { RitualController, type RitualProgressInfo, type KeyboardShortcutHandler
 export { CaptureController, type CaptureUIState, type CaptureControllerEvents, type KeyboardShortcuts } from './controllers/capture-controller.js';
 export { ClarifyController, type ClarifyControllerConfig, type DecisionInterfaceState, type DecisionFormData } from './controllers/clarify-controller.js';
 export { TaskSelectionController, type TaskSelectionUIState, type TaskSelectionControllerEvents, type TaskSelectionControllerConfig } from './controllers/task-selection-controller.js';
+export { ScheduleController, type ScheduleControllerOptions } from './controllers/schedule-controller.js';
 
 // Services
 export { PersistenceService, type StorageAdapter, type PersistenceConfig } from './services/persistence-service.js';
@@ -23,6 +24,9 @@ export { InboxService, type InboxServiceConfig, type InboxIntegration, type Inbo
 export { ClarifyService, type ClarifyServiceConfig, type ClarifySession, type BatchCriteria } from './services/clarify-service.js';
 export { DelegationService, type DelegationServiceConfig, type Assignee, type DeferralTemplate } from './services/delegation-service.js';
 export { TaskSelectionService, type TaskSelectionServiceConfig } from './services/task-selection-service.js';
+export { ScheduleService, type SchedulingOptions, type SchedulingSuggestion, type CalendarEvent } from './services/schedule-service.js';
+export { SmartSchedulingService, type SchedulingContext, type OptimizationWeights } from './services/smart-scheduling-service.js';
+export { CalendarIntegrationService, type CalendarIntegrationOptions, type AvailabilitySlot } from './services/calendar-integration-service.js';
 
 // Components
 export { AssigneeSelector, type AssigneeSelectorConfig, type AssigneeSelectorState } from './components/assignee-selector.js';
@@ -30,6 +34,7 @@ export { DueDatePicker, type DueDatePickerConfig, type DueDatePickerState } from
 export { ContextTagger, type ContextTaggerConfig, type ContextTaggerState } from './components/context-tagger.js';
 export { TaskSelectionInterface, type TaskSelectionInterfaceConfig, type TaskSelectionInterfaceState } from './components/task-selection-interface.js';
 export { DragDropOrdering, type DragDropConfig, type DragDropState } from './components/drag-drop-ordering.js';
+export { SchedulePlanningInterface, type SchedulePlanningOptions, type SchedulePlanningState } from './components/schedule-planning-interface.js';
 
 // Adapters
 export * from './adapters/index.js';

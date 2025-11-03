@@ -1,0 +1,397 @@
+/**
+ * Schedule Planning Interface Styles
+ */
+
+.schedule-planning-interface {
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.schedule-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  background: #f8f9fa;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.schedule-header h3 {
+  margin: 0;
+  color: #2c3e50;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.schedule-controls {
+  display: flex;
+  gap: 8px;
+}
+
+.schedule-controls button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-suggest {
+  background: #007bff;
+  color: white;
+}
+
+.btn-suggest:hover {
+  background: #0056b3;
+}
+
+.btn-clear {
+  background: #6c757d;
+  color: white;
+}
+
+.btn-clear:hover {
+  background: #545b62;
+}
+
+.schedule-grid {
+  display: flex;
+  min-height: 600px;
+  position: relative;
+}
+
+.time-column {
+  width: 80px;
+  background: #f8f9fa;
+  border-right: 1px solid #e9ecef;
+  padding: 10px 0;
+}
+
+.time-slot {
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  color: #6c757d;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.schedule-column {
+  flex: 1;
+  position: relative;
+  background: #ffffff;
+  padding: 10px;
+}
+
+.schedule-slot {
+  position: absolute;
+  width: calc(100% - 20px);
+  height: 58px;
+  border: 1px dashed #dee2e6;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+}
+
+.schedule-slot:hover {
+  border-color: #007bff;
+  background: rgba(0, 123, 255, 0.05);
+}
+
+.schedule-slot.suggested {
+  border-color: #28a745;
+  background: rgba(40, 167, 69, 0.1);
+}
+
+.schedule-slot.suggested:hover {
+  background: rgba(40, 167, 69, 0.2);
+}
+
+.schedule-slot.occupied {
+  border-color: #dc3545;
+  background: rgba(220, 53, 69, 0.1);
+  cursor: not-allowed;
+}
+
+.focus-block {
+  position: absolute;
+  width: calc(100% - 20px);
+  background: #007bff;
+  color: white;
+  border-radius: 6px;
+  padding: 8px 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  cursor: move;
+  transition: all 0.2s ease;
+  z-index: 10;
+}
+
+.focus-block:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  transform: translateY(-1px);
+}
+
+.focus-block.pomodoro {
+  background: #e74c3c;
+}
+
+.focus-block.custom {
+  background: #9b59b6;
+}
+
+.block-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.block-type {
+  font-size: 14px;
+}
+
+.block-duration {
+  background: rgba(255, 255, 255, 0.2);
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 11px;
+}
+
+.block-tasks {
+  font-size: 13px;
+  font-weight: 500;
+  margin-bottom: 6px;
+  line-height: 1.3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.block-controls {
+  display: flex;
+  gap: 4px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.focus-block:hover .block-controls {
+  opacity: 1;
+}
+
+.block-controls button {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  border-radius: 3px;
+  padding: 2px 4px;
+  cursor: pointer;
+  font-size: 12px;
+  color: white;
+  transition: background 0.2s ease;
+}
+
+.block-controls button:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.schedule-summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 20px;
+  background: #f8f9fa;
+  border-top: 1px solid #e9ecef;
+  font-size: 14px;
+  color: #6c757d;
+}
+
+.blocks-count {
+  font-weight: 500;
+}
+
+.conflicts-count {
+  color: #dc3545;
+  font-weight: 500;
+}
+
+.schedule-conflicts {
+  padding: 16px 20px;
+  background: #fff3cd;
+  border-top: 1px solid #ffeaa7;
+}
+
+.schedule-conflicts h4 {
+  margin: 0 0 12px 0;
+  color: #856404;
+  font-size: 16px;
+}
+
+.conflict {
+  margin-bottom: 12px;
+  padding: 12px;
+  border-radius: 4px;
+  background: white;
+  border-left: 4px solid #ffc107;
+}
+
+.conflict.overlap {
+  border-left-color: #dc3545;
+}
+
+.conflict.duration {
+  border-left-color: #17a2b8;
+}
+
+.conflict-message {
+  font-weight: 500;
+  color: #495057;
+  margin-bottom: 8px;
+}
+
+.conflict-suggestions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.suggestion-btn {
+  padding: 4px 8px;
+  background: #e9ecef;
+  border: none;
+  border-radius: 3px;
+  font-size: 12px;
+  color: #495057;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.suggestion-btn:hover {
+  background: #dee2e6;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .schedule-planning-interface {
+    margin: 0;
+    border-radius: 0;
+  }
+  
+  .schedule-header {
+    flex-direction: column;
+    gap: 12px;
+    align-items: stretch;
+  }
+  
+  .schedule-controls {
+    justify-content: center;
+  }
+  
+  .time-column {
+    width: 60px;
+  }
+  
+  .time-slot {
+    font-size: 10px;
+  }
+  
+  .focus-block {
+    padding: 6px 8px;
+  }
+  
+  .block-tasks {
+    font-size: 12px;
+  }
+}
+
+/* Keyboard Navigation */
+.schedule-slot:focus,
+.focus-block:focus {
+  outline: 2px solid #007bff;
+  outline-offset: 2px;
+}
+
+/* Drag and Drop States */
+.focus-block.dragging {
+  opacity: 0.7;
+  transform: rotate(2deg);
+  z-index: 100;
+}
+
+.schedule-slot.drop-target {
+  border-color: #28a745;
+  background: rgba(40, 167, 69, 0.2);
+  border-style: solid;
+}
+
+.schedule-slot.drop-invalid {
+  border-color: #dc3545;
+  background: rgba(220, 53, 69, 0.2);
+}
+
+/* Animation for auto-scheduling */
+@keyframes scheduleAnimation {
+  0% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.focus-block.newly-scheduled {
+  animation: scheduleAnimation 0.3s ease-out;
+}
+
+/* Peak window indicator */
+.schedule-slot.suggested::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  border: 2px solid #28a745;
+  border-radius: 6px;
+  pointer-events: none;
+}
+
+/* Loading state */
+.schedule-planning-interface.loading {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.schedule-planning-interface.loading::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 32px;
+  height: 32px;
+  margin: -16px 0 0 -16px;
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid #007bff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
